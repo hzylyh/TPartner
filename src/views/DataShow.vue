@@ -16,17 +16,17 @@
 
     <!-- 搜索栏 -->
     <el-row class="dt-handle">
-      <el-form :model="form"
-               label-width="80px">
+      <el-form :model="form" label-width="80px">
         <el-row>
           <el-col :span="6">
             <el-form-item label="节点IP">
-              <el-select v-model="form.nodeIP"
-                         placeholder="请选择节点">
-                <el-option label="192.168.1.168"
-                           value="1"></el-option>
-                <el-option label="192.168.1.169"
-                           value="2"></el-option>
+              <el-select v-model="form.nodeIP" placeholder="请选择节点" @change="choosedata">
+                <el-option
+                  v-for="item in nodeIPlist"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -49,12 +49,13 @@
                          label="日期"
                          width="180">
         </el-table-column>
-        <el-table-column prop="name"
-                         label="姓名"
-                         width="180">
+        <el-table-column prop="usecpu"
+                         label="CPU%"
+                         width="180"
+                         >
         </el-table-column>
-        <el-table-column prop="address"
-                         label="地址">
+        <el-table-column prop="usemem"
+                         label="MEM%">
         </el-table-column>
       </el-table>
     </el-row>
@@ -74,26 +75,16 @@ export default {
   data () {
     // 这里存放数据
     return {
+      nodeIPlist: [{ value: 'nodeip1', label: '192.168.224.101:9100' },
+        { value: 'nodeip2', label: '192.168.224.104:9100' },
+        { value: 'nodeip3', label: '192.168.224.106:9100' },
+        { value: 'nodeip4', label: '192.168.224.121:9100' },
+        { value: 'nodeip5', label: '192.168.224.133:9100' },
+        { value: 'nodeip6', label: '192.168.221.102:9100' }],
       form: {
         nodeIP: ''
       },
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      tableData: []
     }
   },
   // 监听属性 类似于data概念
@@ -117,11 +108,12 @@ export default {
   activated () { }, // 如果页面有keep-alive缓存功能，这个函数会触发
   // 方法集合
   methods: {
-    initChart () {
+    initChart (datacpu, datamem) {
       var myChart = echarts.init(document.getElementById('main'))
 
       // 指定图表的配置项和数据
       var option = {
+        legend: { data: ['CPU%', 'MEM%'] },
         xAxis: {
           type: 'category',
           data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -130,13 +122,42 @@ export default {
           type: 'value'
         },
         series: [{
-          data: [150, 230, 224, 218, 135, 147, 260],
+          name: 'CPU%',
+          data: datacpu,
+          type: 'line'
+        }, {
+          name: 'MEM%',
+          data: datamem,
           type: 'line'
         }]
       }
-
       // 使用刚指定的配置项和数据显示图表。
       myChart.setOption(option)
+    },
+    choosedata (value) {
+      if (value === 'nodeip1') {
+        console.log(value)
+        var datacpu = [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.33333, 0.33333, 0.33333, 0.4, 0.4, 0.4, 0.43333, 0.43333, 0.43333, 0.4, 0.4, 0.4, 1.06667, 1.06667, 1.06667, 0.43333, 0.43333, 0.43333, 0.36667, 0.36667, 0.36667, 0.46667, 0.46667, 0.46667, 0.46667, 0.46667, 0.46667, 0.4, 0.4, 0.4, 0.36667, 0.36667, 0.36667, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.43333, 0.43333, 0.43333, 0.43333, 0.43333, 0.43333]
+        var datamem = [6.90271, 6.90271, 6.90271, 6.90271, 6.90477, 6.90477, 6.90477, 6.90477, 6.90477, 6.90477, 6.90517, 6.90517, 6.90517, 6.9049, 6.9049, 6.9049, 6.90696, 6.90696, 6.90696, 6.90557, 6.90557, 6.90557, 6.9049, 6.9049, 6.9049, 6.90517, 6.90517, 6.90517, 6.9051, 6.9051, 6.9051, 6.90304, 6.90304, 6.90304, 6.90317, 6.90317, 6.90317, 6.90331, 6.90331, 6.90331, 6.90331, 6.90331, 6.90331, 6.90264, 6.90264, 6.90264, 6.90058, 6.90058, 6.90058, 6.90264, 6.90264, 6.90264, 6.90291, 6.90291, 6.90291, 6.90264, 6.90264, 6.90264, 6.90417, 6.90417, 6.90417]
+        this.$options.methods.initChart(datacpu, datamem)
+        // this.tableData = [{
+        //   date: '2016-05-02',
+        //   usecpu: 0.4,
+        //   usemem: 6.90271
+        // }]
+        this.tableData = [{
+          date: '2016-05-02',
+          usecpu: 0.4,
+          usemem: 6.90271
+        }, {
+          date: '2016-05-03',
+          usecpu: 0.9,
+          usemem: 9.90271
+        }]
+      } else {
+        this.$options.methods.initChart()
+        this.tableData = []
+      }
     }
   }
 }
